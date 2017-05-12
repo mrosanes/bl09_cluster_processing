@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+NAME="DATA Gather"
+
+function fix_name {
+    # Remove the string at the right hand side of the last dot.
+    # This fix is necessary because the sgather command appends the
+    # hostname to the filename!
+    #
+    # arg 1: target dir
+    # arg 2: target file
+    #
+    filename="$1/$2"
+    mv $1/$2.`hostname` ${filename} >/dev/null
+}
+
+
+function gather_file_by_extension {
+    # Search files with a given extension and move them from SOURCE folder
+    # in temporary node locations to RESULTS folder in local home.
+    #
+    # arg 1: source dir
+    # arg 2: results dir
+    # arg 3: target extension
+    #
+    echo ""
+    echo "*** $NAME: gathering files by extension ***"
+    c_ok=0
+    for file in `find $1 -maxdepth 1 -type f -regex ".*$3" -printf "%f\n" | xargs`; do
+        echo "$NAME: gathering file ${file}"
+        sgather -kp $1/${file} $2/${file}
+        ###Workaround!!
+        fix_name $2 ${file}
+        c_ok=$((c_ok+1))
+    done
+
+    echo ". Recovered files = ${c_ok}"
+    echo "***"
+}
+
+function gather_file_by_pattern {
+    # Search files containing a string pattern in their filename and move them
+    # from SOURCE folder in temporary node locations to RESULTS folder in local
+    # home.
+    #
+    # arg 1: source dir
+    # arg 2: results dir
+    # arg 3: string pattern
+    #
+    echo ""
+    echo "*** $NAME: gathering files with pattern [$3] ***"
+    c_ok=0
+    for file in `find $1 -maxdepth 1 -type f -regex ".*$3.*" -printf "%f\n" | xargs`; do
+        echo "$NAME: gathering file ${file}"
+        sgather -kp $1/${file} $2/${file}
+        ###Workaround!!
+        fix_name $2 ${file}
+        c_ok=$((c_ok+1))
+    done
+
+    echo ". Recovered files = ${c_ok}"
+    echo "***"
+}
+
+function gather_links {
+    # Search symbolic links and move them from SOURCE folder
+    # in temporary node locations to RESULTS folder in local home.
+    # They need to be compressed/uncompressed in order to be effectively
+    # preserved
+    #
+    # arg 1: source dir
+    # arg 2: results dir
+    #
+    echo ""
+    echo "*** $NAME: gathering symbolic links ***"
+    c_ok=0
+    for file in `find $1 -maxdepth 1 -type l -printf "%f\n" | xargs`; do
+        echo "$NAME: gathering symlink ${file}"
+        tarfile=${file}.tar.gz
+        tar czf $1/$tarfile -C $1 $file
+        sgather -kp $1/${tarfile} $2/${tarfile}
+        ###Workaround!!
+        fix_name $2 ${tarfile}
+        tar xzf $2/${tarfile} -C $2
+        rm $2/${tarfile}
+        c_ok=$((c_ok+1))
+    done
+
+    echo ". Recovered links = ${c_ok}"
+    echo "***"
+}
+
+
+function gather_files_from_filelist {
+    # Search files with a given name and move them from SOURCE folder
+    # in temporary node locations to RESULTS folder in local home.
+    # The target filenames are loaded from a filelist file.
+    #
+    # The file list can contain comments with # as a scape character and also
+    # empty lines.
+    #
+    # !!ATTENTION: filelist MUST end with an empty line!!
+    #
+    # arg 1: source dir
+    # arg 2: results dir
+    # arg 3: target filename
+    #
+    echo ""
+    echo "*** $NAME: Loading filenames from file $3 ***"
+    # 1) Read the filenames and fill the array named "array"
+    getArray() {
+        array=()
+        while IFS= read -r line
+        do
+            if [[ -n "$line" && "$line" != [[:blank:]#]* ]] ; then
+                array+=("$line")
+            fi
+        done < "$1"
+        echo "[done]"
+    }
+    getArray $3
+    c_ok=0
+    c_ko=0
+    echo "*** $NAME: Gathering files from $3 ***"
+    for file in "${array[@]}"
+    do
+        if [[ "$file" ]]; then
+            c_ok=$((c_ok+1))
+            sgather -f -k $1/${file} $2/${file}
+            echo "$NAME: gathering file ${file}"
+            ###Workaround!!
+            fix_name $2 ${file}
+        else
+            echo "file ${file} could not be recovered!"
+            c_ko=$((c_ko+1))
+        fi
+    done
+
+    echo ". Recovered files = ${c_ok}"
+    echo ". Failures =        ${c_ko}"
+    echo "***"
+}
+
+########################################################################
+
