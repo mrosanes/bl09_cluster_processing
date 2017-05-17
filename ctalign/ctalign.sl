@@ -35,7 +35,7 @@ echo "srun ctalign ${WORKDIR}/${SOURCEDATAFILE} ${@:2}"
 srun ctalign ${WORKDIR}/${SOURCEDATAFILE} "${@:2}"
 
 ### Recovering results #########################################################
-OUTPUT_FILE="${SOURCEDATAFILE%_norm.hdf5}_ali.hdf5"
+OUTPUT_FILE="${SOURCEDATAFILE%.hdf5}_ali.hdf5"
 echo "\n\nRecovering results:"
 echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
 sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
