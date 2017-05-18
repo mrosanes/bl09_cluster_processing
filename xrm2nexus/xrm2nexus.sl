@@ -26,7 +26,6 @@ mkdir -p $WORKDIR/$SOURCEDIR
 
 echo $'\nCopying input files to Cluster local disks'
 for f in $SOURCEDIR/*.xrm ; do
-    echo $f
     sbcast -p $f $WORKDIR/$SOURCEDIR/`basename $f`
 done
 
@@ -42,23 +41,21 @@ srun xrm2nexus $WORKDIR/$SOURCEDIR --output-dir-name $WORKDIR/$OUT_HDF5_STACKS "
 
 ### Recovering results #########################################################
 if [ -z "$2" ]; then
-    echo "Default output directory will be used"
     OUTDIR=$SOURCEDIR
 else
     OUTDIR=$2
 fi
 
-outdirectories=($`find $WORKDIR/$OUT_HDF5_STACKS -maxdepth 1 -type d`)
-outdirectories=("${outdirectories[@]:1}")
+outdirectories=(`find $WORKDIR/$OUT_HDF5_STACKS -maxdepth 1 -type d`)
+outdirectories=${outdirectories[@]:1}
 
-echo $outdirectories
 echo $'\n\nRecovering results:'
 for outdirectory in $outdirectories; do
+    echo $outdirectory
     finaloutdir=$(basename $outdirectory)
     mkdir -p $OUTDIR/$finaloutdir
 
     for f in $outdirectory/*; do
-        echo $f
         echo "sgather -kpf $f $OUTDIR/$finaloutdir/`basename $f`"
         sgather -kpf $f $OUTDIR/$finaloutdir/`basename $f`
         # Fix output filename
