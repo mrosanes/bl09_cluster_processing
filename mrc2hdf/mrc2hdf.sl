@@ -35,7 +35,7 @@ echo "srun mrc2hdf ${WORKDIR}/${SOURCEDATAFILE} ${@:2}"
 srun mrc2hdf ${WORKDIR}/${SOURCEDATAFILE} "${@:2}"
 
 ### Recovering results #########################################################
-OUTPUT_FILE="${SOURCEDATAFILE%.hdf5}.mrc"
+OUTPUT_FILE="${SOURCEDATAFILE%.mrc}.hdf5"
 echo "\n\nRecovering results:"
 echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
 sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
