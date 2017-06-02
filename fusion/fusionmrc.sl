@@ -27,8 +27,9 @@ mkdir -p $WORKDIR
 echo "---"
 echo "Copying input files to Cluster local disks"
 for file in ${SOURCEDATADIR}/*.mrc; do
-    echo "sbcast ${file} ${WORKDIR}/${file}"
-    sbcast ${file} ${WORKDIR}/${file}
+    basefile=$(basename $file)
+    echo "sbcast ${file} ${WORKDIR}/${basefile}"
+    sbcast ${file} ${WORKDIR}/${basefile}
 done
 
 ### MAIN script ################################################################
@@ -40,6 +41,7 @@ srun fusionmrc ${WORKDIR}
 ### Recovering results #########################################################
 echo "---"
 echo "Recovering results:"
+echo `ls ${WORKDIR}`
 OUTPUT_FILE=`find ${WORKDIR} -name "*_AVG_*"`
 echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
 sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
