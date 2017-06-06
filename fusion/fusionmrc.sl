@@ -42,13 +42,13 @@ srun fusionmrc ${WORKDIR}
 echo "---"
 echo "Recovering results:"
 echo `ls ${WORKDIR}`
-OUTPUT_FILE=`find ${WORKDIR} -name "*_AVG_*"`
+OUTPUT_FILE=`find ${WORKDIR} -name "*_AVG_norm.mrc"`
+OUTPUT_FILE=$(basename "$OUTPUT_FILE")
 echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
 sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
 ################################################################################
 
 ### Fix output file name by removing the node name from the suffix #############
-filename="$1/$2"
 mv ${SOURCEDATADIR}/${OUTPUT_FILE}.`hostname` ${SOURCEDATADIR}/${OUTPUT_FILE}
 ################################################################################
 
