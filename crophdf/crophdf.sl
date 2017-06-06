@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### Input parameters #######################################################
-# 1: DATA FILE: SOURCEDATA (contains the stack of images to be aligned)
+# 1: DATA FILE: SOURCEDATA (contains the stack of images to be cropped)
 # 2 ..: crophdf parameters
 ################################################################################
 

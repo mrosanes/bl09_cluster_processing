@@ -1,7 +1,7 @@
 #!/bin/bash
 
-### Input parameters #######################################################
-# 1: DATA FILE: SOURCEDATA (contains the stack of images to be aligned)
+### Input parameters ###########################################################
+# 1: DATA FILE: SOURCEDATA (contains the hdf5 stack of images to norm and crop
 # 2 ..: hdf2normcrop parameters
 ################################################################################
 
