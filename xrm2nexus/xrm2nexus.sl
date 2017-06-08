@@ -8,8 +8,8 @@
 #SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es
-#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus_energies.%N.%j.out
-#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus_energies.%N.%j.err
+#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus.%N.%j.out
+#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus.%N.%j.err
 #SBATCH --tmp=8G
 ################################################################################
 
@@ -20,7 +20,7 @@ start=`date +%s`
 
 ### Copy files to computing nodes ##############################################
 SOURCEDIR=$1
-WORKDIR="/tmp/bl09_xrm2nexus_energies_${SLURM_JOBID}"
+WORKDIR="/tmp/bl09_xrm2nexus_${SLURM_JOBID}"
 mkdir -p $WORKDIR/$SOURCEDIR
 
 echo $'\nCopying input files to Cluster local disks'
@@ -33,9 +33,9 @@ done
 OUT_HDF5_STACKS=outputhdf
 mkdir -p $WORKDIR/$OUT_HDF5_STACKS
 echo $'\n\n'
-echo "Running xrm2nexus_energies"
-echo "srun xrm2nexus_energies $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS ${@:3}"
-srun xrm2nexus_energies $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS "${@:3}"
+echo "Running xrm2nexus"
+echo "srun xrm2nexus $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS ${@:3}"
+srun xrm2nexus $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS "${@:3}"
 
 
 ### Recovering results #########################################################
