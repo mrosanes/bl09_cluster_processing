@@ -1,54 +1,59 @@
 #!/bin/bash
 
-### Input parameters #######################################################
-# 1: DATA FILE: SOURCEDATA (contains the stack of images to be normalized)
-# 2 ..: normalize parameters
+### Input parameters ###########################################################
+# No Input Required 
+# (be located in the mrc input files folder before executing alignfuse)
 ################################################################################
 
 ### SLURM environment ##########################################################
 #SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es 
-#SBATCH -o /beamlines/bl09/controls/cluster/logs/slurm.%N.%j.out # STDOUT
-#SBATCH -e /beamlines/bl09/controls/cluster/logs/slurm.%N.%j.err # STDERR
-#SBATCH --tmp=8G
+#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N.%j.out
+#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N.%j.err
+#SBATCH --tmp=16G
+#SBATCH --mem=32G
 ################################################################################
 
 echo `date`
 start=`date +%s`
 
 ### Copy files to computing nodes ##############################################
-SOURCEDATA=$1
-SOURCEDATADIR=$(dirname "$1")
-SOURCEDATAFILE=$(basename "$1")
-
-WORKDIR="/tmp/bl09_normalize_${SLURM_JOBID}"
+SOURCEDATADIR=`pwd`
+WORKDIR="/tmp/bl09_alignfuse_${SLURM_JOBID}"
 mkdir -p $WORKDIR
-echo "\nCopying input files to Cluster local disks"
-echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
-sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}
+echo "---"
+echo "Copying input files to Cluster local disks"
+for file in ${SOURCEDATADIR}/*.mrc; do
+    basefile=$(basename $file)
+    echo "sbcast ${file} ${WORKDIR}/${basefile}"
+    sbcast ${file} ${WORKDIR}/${basefile}
+done
 
 ### MAIN script ################################################################
-echo "\n\n"
-echo "Running normalize"
-echo "srun normalize ${WORKDIR}/${SOURCEDATAFILE} ${@:2}"
-srun normalize ${WORKDIR}/${SOURCEDATAFILE} "${@:2}"
+echo "---"
+echo "Running alignfuse:"
+cd $WORKDIR
+echo "srun alignfuse"
+srun alignfuse
 
 ### Recovering results #########################################################
-OUTPUT_FILE="${SOURCEDATAFILE%.hdf5}_norm.hdf5"
-echo "\n\nRecovering results:"
-echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
-sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
-################################################################################
-
+echo "---"
+echo "Recovering results:"
+OUTPUT_FILE=`find . -name "*_FS.mrc"`
+echo "sgather -kpf ${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
+sgather -kpf ${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
 ### Fix output file name by removing the node name from the suffix #############
-filename="$1/$2"
 mv ${SOURCEDATADIR}/${OUTPUT_FILE}.`hostname` ${SOURCEDATADIR}/${OUTPUT_FILE}
 ################################################################################
 
 ### Time spent for processing the job ##########################################
 end=`date +%s`
 runtime=$((end-start))
-echo "\n"
+echo "---"
 echo "Time to run: $runtime seconds"
 ################################################################################
+
+
+
+
