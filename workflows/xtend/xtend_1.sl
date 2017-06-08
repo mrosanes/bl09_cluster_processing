@@ -1,8 +1,9 @@
 #!/bin/bash
 
 ################################################################################
-# 1: Input Arguments: xrm files, each of them containing a single image
-# 2: Execution: xtend_1 arguments
+# 1: Input Arguments: folder containing the xrm files, 
+#                     each xrm file containing a single image
+# 2: Execution: xtend_1 input_folder output_folder
 ################################################################################
 
 ### SLURM environment ##########################################################
@@ -14,49 +15,74 @@
 #SBATCH --tmp=8G
 ################################################################################
 
+
 echo `date`
 start=`date +%s`
 
+
 ### Copy files to computing nodes ##############################################
-INIT_DIR=`pwd`
 
 SOURCEDATADIR=$1
+OUTDIR=$2
+
 WORKDIR="/tmp/bl09_xtend_1_${SLURM_JOBID}"
 INPUTDATACLUSTERDIR=$WORKDIR/inputdata
-mkdir -p $WORKDIR
+OUTPUTDATACLUSTERDIR="${WORKDIR}/output"
+
 mkdir -p $INPUTDATACLUSTERDIR
+mkdir -p $OUTPUTDATACLUSTERDIR
 
 echo "Copying input files to Cluster local disks"
 echo "sbcast from ${SOURCEDATADIR} to ${INPUTDATACLUSTERDIR}"
-FILES=/path/to/*
 for f in $SOURCEDATADIR/*; do
     SOURCEDATAFILE=$(basename $f)
     echo "sbcast -p ${f} ${INPUTDATACLUSTERDIR}/${SOURCEDATAFILE}"
     sbcast -p ${f} ${INPUTDATACLUSTERDIR}/${SOURCEDATAFILE}
 done
 
+
 ### MAIN script ################################################################
-CLUSTER_LOCAL_OUTPUT_DIR="${WORKDIR}/output"
 echo "Running xtend_1"
-echo "srun xtend_1 ${INPUTDATACLUSTERDIR} ${CLUSTER_LOCAL_OUTPUT_DIR}"
-srun xtend_1 ${INPUTDATACLUSTERDIR} ${CLUSTER_LOCAL_OUTPUT_DIR}
+echo "srun xtend_1 ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR}"
+srun xtend_1 ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR}
+
 
 ### Recovering results #########################################################
-
-#OUTPUTDIR=$2
-#OUTPUT_FILE=$(basename "`ls ${WORKDIR}/*/*/*_FS.mrc`")
-#ANGLES="angles.tlt"
+#### GATHER OUTPUT FILES BY PATTERN AND REPLICATE STRUCTURE OF DIRECTORIES #####
 echo "Recovering results:"
-#echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE} ${OUTPUTDIR}/${OUTPUT_FILE}"
-#echo "sgather -kpf ${WORKDIR}/${ANGLES} ${OUTPUTDIR}/${ANGLES}"
-#sgather -kpf ${WORKDIR}/${OUTPUT_FILE} ${OUTPUTDIR}/${OUTPUT_FILE}
-#sgather -kpf ${WORKDIR}/${ANGLES} ${OUTPUTDIR}/${ANGLES}
+echo "Output directory: $OUTDIR"
+mkdir -p $OUTDIR
 
-### Fix output file name by removing the node name from the suffix #############
-#mv ${SOURCEDATADIR}/${OUTPUT_FILE}.`hostname` ${SOURCEDATADIR}/${OUTPUT_FILE}
-#mv ${SOURCEDATADIR}/${ANGLES}.`hostname` ${SOURCEDATADIR}/${ANGLES}
+cluster_output_subdirs=`find $OUTPUTDATACLUSTERDIR -maxdepth 2 -type d`
+c=0
+for subdir in $cluster_output_subdirs; do
+    echo $subdir
+    if [ $c = 0 ]; then
+        first_path=$subdir
+    fi
+    
+    # Create directory structure
+    sub_path="${subdir#"$first_path"}"
+    output_path=$OUTDIR/$sub_path
+    mkdir -p $output_path
 
-cd $INIT_DIR
+    # Get the Fused files: averaged mrc files using many focuses (ZP positions)
+    # And get also the angles.tlt files
+    for f in $subdir/*; do
+        if [ $f != ${f%_FS.mrc} ] || [ "$f" = "$subdir/angles.tlt" ]; then
+            echo $f
+            f_basename=$(basename "$f")
+            echo "sgather -kpf $f $output_path/$f_basename"
+            sgather -kpf $f $output_path/$f_basename
+            mv $output_path/$f_basename.`hostname` $output_path/$f_basename
+        fi
+    done
+
+    c=1
+done
+
+################################################################################
+
 
 ### Time spent for processing the job ##########################################
 end=`date +%s`
