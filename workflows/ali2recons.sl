@@ -3,9 +3,8 @@
 ### Input parameters #######################################################
 # 1: Input mrc file containing the projections
 # 2: Input tilt angles file 
-# 3: Optional: Output file name.
-# 4: Optional: Iterations (default: 30)
-# 5: Optional: height (Default: 500)
+# 3: Optional: Iterations (default: 30)
+# 4: Optional: height (Default: 500)
 ################################################################################
 
 ### SLURM environment ##########################################################
@@ -41,6 +40,12 @@ else
     ITERATIONS=$3
 fi
 
+if [ -z "$4" ]; then
+    HEIGHT=500
+else
+    HEIGHT=$4
+fi
+
 ### Copy files to computing nodes ##############################################
 WORKDIR="/tmp/bl09_ali2recons_${SLURM_JOBID}"
 mkdir -p $WORKDIR
@@ -64,8 +69,8 @@ sleep 2
 # Reconstruct using tomo3d
 echo "Running tomo3d"
 align_xzy="${align_mrc%_ali.mrc}_recons.xzy"
-echo "srun tomo3d -a ${ANGLES} -i ${align_mrc} -l ${ITERATIONS} -z 500 -S -t 48 -H -o ${align_xzy}"
-srun tomo3d -a ${ANGLES} -i ${align_mrc} -l ${ITERATIONS} -z 500 -S -t 48 -H -o ${align_xzy}
+echo "srun tomo3d -a ${ANGLES} -i ${align_mrc} -l ${ITERATIONS} -z ${HEIGHT} -S -t 48 -H -o ${align_xzy}"
+srun tomo3d -a ${ANGLES} -i ${align_mrc} -l ${ITERATIONS} -z ${HEIGHT} -S -t 48 -H -o ${align_xzy}
 
 # Flip axis to have the correct xyz coordinates in the reconstructed volume
 echo "Running trimvol"
