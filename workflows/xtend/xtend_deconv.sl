@@ -1,9 +1,23 @@
 #!/bin/bash
 
-################################################################################
-# 1: Input Arguments: folder containing the xrm files, 
+## WORKFLOW: 
+# - xrm2nexus
+# - normalization
+# - crop
+# - align the images for each angle (multifocus)
+# - fuse
+# - deconvolve
+
+##### Input Arguments ##########################################################
+# 1: Input directory: folder containing the xrm files, 
 #                     each xrm file containing a single image
-# 2: Execution: xtend_deconv input_folder output_folder
+# 2: output directory
+# 3: Date (default: 20161201)
+# 3: ZP dr (default: 25)
+# 4: dx (Default: 10)
+# 5: kw (Default: 0.02)
+# 6: zSize (Default: 20)
+# 7: psf_dir (Default: /beamlines/bl09/controls/user_resources/psf_directory)
 ################################################################################
 
 ### SLURM environment ##########################################################
