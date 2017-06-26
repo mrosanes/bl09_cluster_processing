@@ -78,8 +78,8 @@ SOURCEDATAFILE=$(basename "$SOURCEDATA")
 WORKDIR="/tmp/bl09_tomo_deconv_wiener_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "Copying input files to Cluster local disks"
-echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
-sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}
+echo "sbcast -p ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
+sbcast -p ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}
 
 ### MAIN script ################################################################
 cd ${WORKDIR}
