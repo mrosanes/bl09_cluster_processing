@@ -23,6 +23,8 @@
 echo `date`
 start=`date +%s`
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/mnt/hpcsoftware/MATLAB/MATLAB_Runtime/v90/runtime/glnxa64:/mnt/hpcsoftware/MATLAB/MATLAB_Runtime/v90/bin/glnxa64:/mnt/hpcsoftware/MATLAB/MATLAB_Runtime/v90/sys/os/glnxa64
+
 ### IMPORTANT VARIABLES ########################################################
 INIT_DIR=`pwd`
 
