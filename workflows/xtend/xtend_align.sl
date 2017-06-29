@@ -24,8 +24,8 @@
 #SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es
-#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xtend_deconv_%N.%j.out
-#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xtend_deconv_%N.%j.err
+#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xtend_align_%N.%j.out
+#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xtend_align_%N.%j.err
 #SBATCH --tmp=8G
 ################################################################################
 
@@ -70,7 +70,7 @@ else
 fi
 
 
-WORKDIR="/tmp/bl09_xtend_deconv_${SLURM_JOBID}"
+WORKDIR="/tmp/bl09_xtend_align_${SLURM_JOBID}"
 INPUTDATACLUSTERDIR=$WORKDIR/inputdata
 OUTPUTDATACLUSTERDIR="${WORKDIR}/output"
 
@@ -87,9 +87,9 @@ done
 
 
 ### MAIN script ################################################################
-echo "Running xtend_deconv"
-echo "srun xtend_deconv ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR} ${ZP_DR} ${DX} ${KW} ${ZSIZE} ${PSF_DIR}"
-srun xtend_deconv ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR} ${ZP_DR} ${DX} ${KW} ${ZSIZE} ${PSF_DIR}
+echo "Running xtend_align"
+echo "srun xtend_align ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR} ${ZP_DR} ${DX} ${KW} ${ZSIZE} ${PSF_DIR}"
+srun xtend_align ${INPUTDATACLUSTERDIR} ${OUTPUTDATACLUSTERDIR} ${ZP_DR} ${DX} ${KW} ${ZSIZE} ${PSF_DIR}
 
 
 ### Recovering results #########################################################
@@ -115,7 +115,7 @@ for subdir in $cluster_output_subdirs; do
     # And get also the angles.tlt files
     for f in $subdir/*; do
         f_basename=$(basename "$f")
-        if [[ $f_basename == *"_FS.mrc" ]] || [[ $f_basename == *"_deconv_"* ]] || [[ $f_basename == *"angles.tlt" ]]; then
+        if [[ $f_basename == *"_ali.hdf5" ]] || [[ $f_basename == *"angles.tlt" ]]; then
             echo $f_basename
             f_basename=$(basename "$f")
             echo "sgather -kpf $f $output_path/$f_basename"
