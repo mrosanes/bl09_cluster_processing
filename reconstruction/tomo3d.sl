@@ -61,8 +61,8 @@ sbcast ${SOURCEDATADIR}/${ANGLES} ${WORKDIR}/${ANGLES}
 ### MAIN script ################################################################
 cd ${WORKDIR}
 echo "Running tomo3d"
-echo "srun tomo3d -a ${ANGLES} -i ${SOURCEDATAFILE} -l ${ITERATIONS} -z 500 -S -t 48 -H -o ${OUTPUT_FILE}"
-srun tomo3d -a ${ANGLES} -i ${SOURCEDATAFILE} -l ${ITERATIONS} -z 500 -S -t 48 -H -o ${OUTPUT_FILE}
+echo "srun tomo3d -a ${ANGLES} -i ${SOURCEDATAFILE} -l ${ITERATIONS} -z ${HEIGHT} -S -t 48 -H -o ${OUTPUT_FILE}"
+srun tomo3d -a ${ANGLES} -i ${SOURCEDATAFILE} -l ${ITERATIONS} -z ${HEIGHT} -S -t 48 -H -o ${OUTPUT_FILE}
 cd $INIT_DIR
 
 ### Recovering results #########################################################
