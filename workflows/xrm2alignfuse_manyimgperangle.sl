@@ -1,15 +1,18 @@
 #!/bin/bash
 
 ### Input parameters ###########################################################
-# 1: Input Data Directory: containing xrm files each one with a single image.
+# Workflow for processing acquisitions with many images per each angle
+# 1: Number of images per each angle 
+# 2: Input Data Directory: containing xrm files each one with a single image.
+# 3: Output directory
 ################################################################################
 
 ### SLURM environment ##########################################################
 #SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es
-#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus.%N.%j.out
-#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xrm2nexus.%N.%j.err
+#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xrm2alignfuse_manyimgperangle_%N_%j.out
+#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xrm2alignfuse_manyimgperangle_%N_%j.err
 #SBATCH --tmp=8G
 ################################################################################
 
@@ -17,10 +20,16 @@
 echo `date`
 start=`date +%s`
 
+# Input Arguments
+NUMIMG=$1
+SOURCEDIR=$2
+OUTDIR=$3
+
+root_path=`pwd`
 
 ### Copy files to computing nodes ##############################################
-SOURCEDIR=$1
-WORKDIR="/tmp/bl09_xrm2nexus_${SLURM_JOBID}"
+
+WORKDIR="/tmp/bl09_xrm2alignfuse_manyimgperangle_${SLURM_JOBID}"
 mkdir -p $WORKDIR/$SOURCEDIR
 
 echo $'\nCopying input files to Cluster local disks'
@@ -28,43 +37,31 @@ for f in $SOURCEDIR/*.xrm ; do
     sbcast -p $f $WORKDIR/$SOURCEDIR/`basename $f`
 done
 
-
 ### MAIN script ################################################################
-OUT_HDF5_STACKS=outputhdf
-mkdir -p $WORKDIR/$OUT_HDF5_STACKS
-echo $'\n\n'
-echo "Running xrm2nexus"
-echo "srun xrm2nexus $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS ${@:3}"
-srun xrm2nexus $WORKDIR/$SOURCEDIR --output-dir-name=$WORKDIR/$OUT_HDF5_STACKS "${@:3}"
+
+cd $WORKDIR
+
+echo "Running xrm2alignfuse_manyimgperangle"
+echo "srun xrm2alignfuse_manyimgperangle $NUMIMG $WORKDIR/$SOURCEDIR $WORKDIR/$OUTDIR"
+srun xrm2alignfuse_manyimgperangle $NUMIMG $SOURCEDIR $OUTDIR 
 
 
 ### Recovering results #########################################################
-if [ -z "$2" ]; then
-    OUTDIR=$SOURCEDIR
-else
-    OUTDIR=$2
-    prefix="--output-dir-name="
-    OUTDIR=${OUTDIR#$prefix}
-fi
 
-echo "Output directory: $OUTDIR"
+echo "---"
+echo "Recovering results:"
+cd "$WORKDIR/$OUTDIR/hdf_mrc_dir/mrcnorm"
+OUTPUT_FILE=`find . -name "*_FS.mrc"`
+OUTPUT_FILE=$(basename "$OUTPUT_FILE")
+OUT_FOLDER=$root_path/$OUTDIR
+mkdir -p $OUT_FOLDER
+echo "sgather -kpf ${OUTPUT_FILE}  $OUT_FOLDER/${OUTPUT_FILE}"
+sgather -kpf ${OUTPUT_FILE}  ${OUT_FOLDER}/${OUTPUT_FILE}
+################################################################################
 
-outdirectories=(`find $WORKDIR/$OUT_HDF5_STACKS -maxdepth 1 -type d`)
-outdirectories=${outdirectories[@]:1}
-
-echo $'\n\nRecovering results:'
-for outdirectory in $outdirectories; do
-    echo $outdirectory
-    finaloutdir=$(basename $outdirectory)
-    mkdir -p $OUTDIR/$finaloutdir
-
-    for f in $outdirectory/*; do
-        echo "sgather -kpf $f $OUTDIR/$finaloutdir/`basename $f`"
-        sgather -kpf $f $OUTDIR/$finaloutdir/`basename $f`
-        # Fix output filename
-        mv $OUTDIR/$finaloutdir/`basename $f`.`hostname` $OUTDIR/$finaloutdir/`basename $f`
-    done
-done
+### Fix output file name by removing the node name from the suffix #############
+mv ${OUT_FOLDER}/${OUTPUT_FILE}.`hostname` ${OUT_FOLDER}/${OUTPUT_FILE}
+################################################################################
 
 
 ### Time spent for processing the job ##########################################
