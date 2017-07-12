@@ -6,13 +6,13 @@
 ################################################################################
 
 ### SLURM environment ##########################################################
-#SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
+#SBATCH -p medium # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es 
-#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N.%j.out
-#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N.%j.err
-#SBATCH --tmp=16G
+#SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N_%j.out
+#SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_alignfuse_%N_%j.err
 #SBATCH --mem=32G
+#SBATCH --tmp=300G
 ################################################################################
 
 echo `date`
@@ -53,7 +53,5 @@ runtime=$((end-start))
 echo "---"
 echo "Time to run: $runtime seconds"
 ################################################################################
-
-
 
 

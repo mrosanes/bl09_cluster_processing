@@ -8,12 +8,13 @@
 ################################################################################
 
 ### SLURM environment ##########################################################
-#SBATCH -p short # partition (queue) (it can be short, medium, or beamline)
+#SBATCH -p medium # partition (queue) (it can be short, medium, or beamline)
 #SBATCH -N 1
 #SBATCH --mail-user=mrosanes@cells.es
 #SBATCH -o /beamlines/bl09/controls/cluster/logs/bl09_xrm2alignfuse_manyimgperangle_%N_%j.out
 #SBATCH -e /beamlines/bl09/controls/cluster/logs/bl09_xrm2alignfuse_manyimgperangle_%N_%j.err
-#SBATCH --tmp=8G
+#SBATCH --tmp=350G
+#SBATCH --mem=16G
 ################################################################################
 
 
