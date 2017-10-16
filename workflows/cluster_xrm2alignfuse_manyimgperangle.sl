@@ -30,7 +30,7 @@ root_path=`pwd`
 
 ### Copy files to computing nodes ##############################################
 
-WORKDIR="/tmp/bl09_xrm2alignfuse_manyimgperangle_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_xrm2alignfuse_manyimgperangle_${SLURM_JOBID}"
 mkdir -p $WORKDIR/$SOURCEDIR
 
 echo $'\nCopying input files to Cluster local disks'

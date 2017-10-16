@@ -25,7 +25,7 @@ start=`date +%s`
 SOURCEDATADIR=$1
 OUTDIR=$2
 
-WORKDIR="/tmp/bl09_xtend_1_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_xtend_1_${SLURM_JOBID}"
 INPUTDATACLUSTERDIR=$WORKDIR/inputdata
 OUTPUTDATACLUSTERDIR="${WORKDIR}/output"
 

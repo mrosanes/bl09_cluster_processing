@@ -70,7 +70,7 @@ else
 fi
 
 
-WORKDIR="/tmp/bl09_xtend_deconv_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_xtend_deconv_${SLURM_JOBID}"
 INPUTDATACLUSTERDIR=$WORKDIR/inputdata
 OUTPUTDATACLUSTERDIR="${WORKDIR}/output"
 

@@ -46,7 +46,7 @@ else
 fi
 
 ### Copy files to computing nodes ##############################################
-WORKDIR="/tmp/bl09_txrm2recons_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_txrm2recons_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "Copying input files to Cluster local disks"
 echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"

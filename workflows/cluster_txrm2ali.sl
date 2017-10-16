@@ -27,7 +27,7 @@ SOURCEDATAFILE=$(basename "$SOURCEDATA")
 SOURCEDATADIR_FF=$(dirname "$SOURCEDATA_FF")
 SOURCEDATAFILE_FF=$(basename "$SOURCEDATA_FF")
 
-WORKDIR="/tmp/bl09_txrm2ali_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_txrm2ali_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 
 ### COPY Input Data to Cluster #################################################

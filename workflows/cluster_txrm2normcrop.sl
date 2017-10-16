@@ -28,7 +28,7 @@ SOURCEDATADIR_FF=$(dirname "$SOURCEDATA_FF")
 SOURCEDATAFILE_FF=$(basename "$SOURCEDATA_FF")
 
 INIT_DIR=`pwd`
-WORKDIR="/tmp/bl09_txrm2normcrop_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_txrm2normcrop_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "Copying input files to Cluster local disks"
 echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
