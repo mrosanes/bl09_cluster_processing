@@ -75,7 +75,7 @@ SOURCEDATADIR=$(dirname "$SOURCEDATA")
 SOURCEDATAFILE=$(basename "$SOURCEDATA")
 
 ### Copy files to computing nodes ##############################################
-WORKDIR="/tmp/bl09_tomo_deconv_wiener_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_tomo_deconv_wiener_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "Copying input files to Cluster local disks"
 echo "sbcast -p ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"

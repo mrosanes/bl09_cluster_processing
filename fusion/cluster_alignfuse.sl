@@ -20,7 +20,7 @@ start=`date +%s`
 
 ### Copy files to computing nodes ##############################################
 SOURCEDATADIR=`pwd`
-WORKDIR="/tmp/bl09_alignfuse_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_alignfuse_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "---"
 echo "Copying input files to Cluster local disks"

@@ -22,7 +22,7 @@ if [ -z "$1" ]; then
     SOURCEDATADIR="./"
 fi
 
-WORKDIR="/tmp/bl09_fusionmrc_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_fusionmrc_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "---"
 echo "Copying input files to Cluster local disks"

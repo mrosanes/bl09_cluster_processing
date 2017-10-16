@@ -24,7 +24,7 @@ SOURCEDATAFILE=$(basename "$1")
 
 INITIAL_DIR=`pwd`
 
-WORKDIR="/tmp/bl09_extract_angle_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_extract_angle_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "Copying input files to Cluster local disks"
 echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
