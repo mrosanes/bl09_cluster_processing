@@ -27,7 +27,7 @@ SOURCEDATA_TXRM_FF=$2
 SOURCEDATA_TXRM_FF_DIR=$(dirname "$2")
 SOURCEDATA_TXRM_FF_FILE=$(basename "$2")
 
-WORKDIR="/tmp/bl09_txrm2nexus_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_txrm2nexus_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo $'\nCopying input files to Cluster local disks'
 echo "sbcast ${SOURCEDATA_TXRM} ${WORKDIR}/${SOURCEDATA_TXRM_FILE}"
