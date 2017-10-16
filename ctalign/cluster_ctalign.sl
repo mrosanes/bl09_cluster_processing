@@ -39,11 +39,13 @@ OUTPUT_FILE="${SOURCEDATAFILE%.hdf5}_ali.hdf5"
 echo "\n\nRecovering results:"
 echo "sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}"
 sgather -kpf ${WORKDIR}/${OUTPUT_FILE}  ${SOURCEDATADIR}/${OUTPUT_FILE}
+sgather -kpf ${WORKDIR}/angles.tlt  ${SOURCEDATADIR}/angles.tlt
 ################################################################################
 
 ### Fix output file name by removing the node name from the suffix #############
 filename="$1/$2"
 mv ${SOURCEDATADIR}/${OUTPUT_FILE}.`hostname` ${SOURCEDATADIR}/${OUTPUT_FILE}
+mv ${SOURCEDATADIR}/angles.tlt.`hostname` ${SOURCEDATADIR}/angles.tlt
 ################################################################################
 
 ### Time spent for processing the job ##########################################
