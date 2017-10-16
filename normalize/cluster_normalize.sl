@@ -22,7 +22,7 @@ SOURCEDATA=$1
 SOURCEDATADIR=$(dirname "$1")
 SOURCEDATAFILE=$(basename "$1")
 
-WORKDIR="/tmp/bl09_normalize_${SLURM_JOBID}"
+WORKDIR="/beegfs/scratch/bl09/bl09_normalize_${SLURM_JOBID}"
 mkdir -p $WORKDIR
 echo "\nCopying input files to Cluster local disks"
 echo "sbcast ${SOURCEDATA} ${WORKDIR}/${SOURCEDATAFILE}"
