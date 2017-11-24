@@ -172,7 +172,7 @@ for dir in $( ls -d $OUTPUTDATACLUSTERDIR/*/* ); do
     reference=${mrc_array[1]}
     array=${mrc_array[@]/$reference}
     for e_mrc in ${array[@]}; do
-        FIJI_PATHS=$FIJI_HOME/ImageJ-linux64:$FIJI_PLUGINS/TomoJ_2.32-jar-with-dependencies.jar:$FIJI_PLUGINS/TomoJ/Eftem_TomoJ_1.03.jar
+        FIJI_PATHS=$FIJI_HOME/ImageJ-linux64:$FIJI_PLUGINS/TomoJ_2.32-jar-with-dependencies.jar:$FIJI_PLUGINS/TomoJ/Eftem_TomoJ_1.04.jar
         srun java -cp $FIJI_PATHS eftemtomoj.EFTEM_TomoJ -tsSignal ${dir}/${reference} 1 1 -tsBg ${dir}/${e_mrc} 2 1 -align NMI 0
     done
     echo "--------------------------------------------------------------------"
